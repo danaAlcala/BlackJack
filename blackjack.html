@@ -1,0 +1,314 @@
+<html>
+
+	<canvas id = "gameCanvas" width = "800" height = "600"> // Notice that this is in the HTML itself, and not the Javascript.  gameCanvas is a label that will be used in the actual script.
+	</canvas>
+	<script>
+		// Original card size: 561 x 781; Sprite Sheet Columns: 13 Rows: 4
+		var cardsSheetLoaded = false;
+		var cardBackLoaded = false;
+
+		// Canvas Variables
+		var canvas;
+		var canvasContext;
+		var canvasBGColor;
+
+		// FPS
+		var framesPerSecond;
+		
+		// Deck/Card arrays
+		var deckValues = [
+			"Ace", // 0
+			"Two", // 1
+			"Three", // 2
+			"Four", // 3
+			"Five", // 4
+			"Six", // 5
+			"Seven", // 6
+			"Eight", // 7
+			"Nine", // 8
+			"Ten", // 9
+			"Jack", // 10
+			"Queen", // 11
+			"King" // 12
+		];
+		var deckSuits = [
+			"Hearts", // 0
+			"Diamonds", // 1
+			"Clubs", // 2
+			"Spades", // 3
+		];
+
+		var cards = document.createElement("img");
+		var cardBack = document.createElement("img");
+		
+		var dealerDeck = [];
+		var dealerHand = [];
+		var playerHand = [];
+		
+		var cardValue;
+		var cardSuit;
+		var cardWidth;
+		var cardHeight;
+		var cardFromSheetWidth;
+		var cardFromSheetHeight;
+		var debugCard;
+
+		var holdLeft = false;
+		var holdRight = false;
+		var holdUp = false;
+		var holdDown = false;
+		var unHold = false;
+		
+		const KEY_LEFT_ARROW = 37;
+ 		const KEY_UP_ARROW = 38;
+  		const KEY_RIGHT_ARROW = 39;
+  		const KEY_DOWN_ARROW = 40;
+  		const KEY_SPACE = 32;
+
+		window.onload = function() // Everything that runs in this function runs after the window has finished loading.
+		{
+			initializeEverything();
+			freshDeck();
+			cards.onload = function () {
+        		cardsSheetLoaded = true;
+				console.log("Card sheet loaded successfully");
+    		}
+			cardBack.onload = function () {
+        		cardsBackLoaded = true;
+				console.log("Card back loaded successfully");
+    		}
+			setInterval(updateAll, 1000 / framesPerSecond);
+					
+		}
+
+		function drawCard(x, y, sheetX, sheetY) {
+			canvasContext.drawImage(cards, sheetX * cardFromSheetWidth, sheetY * cardFromSheetHeight, cardFromSheetWidth, cardFromSheetHeight, x, y, cardWidth, cardHeight);
+		}
+		function drawCardBack(x, y) {
+			canvasContext.drawImage(cardBack, 0, 0, cardFromSheetWidth, cardFromSheetHeight, x, y, cardWidth, cardHeight);
+		}
+		
+		function setKeyHoldState(thisKey, setTo) {
+    		if(thisKey == KEY_LEFT_ARROW) {
+      			holdLeft = setTo;
+    		}
+    		if(thisKey == KEY_RIGHT_ARROW) {
+      			holdRight = setTo;
+    		}
+    		if(thisKey == KEY_UP_ARROW) {
+      			holdUp = setTo;
+    		}
+			if(thisKey == KEY_DOWN_ARROW) {
+				holdDown = setTo;
+			}
+  		}
+		
+  
+
+		function initInput() {
+    		document.addEventListener("keydown", keyPressed);
+    		document.addEventListener("keyup", keyReleased);
+			
+  		}
+		
+		
+  		function keyPressed(evt) {
+    		setKeyHoldState(evt.keyCode, true);
+ 			evt.preventDefault(); // without this, arrow keys scroll the browser!
+  		}
+  
+  		function keyReleased(evt) {
+    		setKeyHoldState(evt.keyCode, false);
+  		}
+
+		function freshDeck() {
+			loadHearts();
+			loadDiamonds();
+			loadClubs();
+			loadSpades();
+		}
+		function loadHearts() {
+			var i = 0;
+			for (i; i < 13; i++) {
+				dealerDeck[i] = deckValues[i] + " of " + deckSuits[0];
+				console.log('Heart card added');
+			}
+			console.log('Hearts complete');
+		}
+		function loadDiamonds() {
+			var i = 13;
+			for (i; i < 26; i++) {
+				dealerDeck[i] = deckValues[i-13] + " of " + deckSuits[1];
+				console.log('Diamond card added');
+			}
+			console.log('Diamonds complete');
+		}
+		function loadClubs() {
+			var i = 26;
+			for (i; i < 39; i++) {
+				dealerDeck[i] = deckValues[i-26] + " of " + deckSuits[2];
+				console.log('Club card added');
+			}
+			console.log('Clubs complete');
+		}
+		function loadSpades() {
+			var i = 39;
+			for (i; i < 52; i++) {
+				dealerDeck[i] = deckValues[i-39] + " of " + deckSuits[3];
+				console.log('Spade card added');
+			}
+			console.log('Spades complete');
+		}
+		
+		
+		
+		function randomNumber(start, end) {
+			return Math.floor((Math.random() * end) + start);
+		}
+		function initializeCanvas()
+		{
+			// console.log('Called initializeCanvas()');  // DEBUG
+
+			canvas = document.getElementById('gameCanvas'); // This grabs the canvas from the HTML for use in the script.
+			canvasContext = canvas.getContext('2d'); // "The getContext() method returns an object that provides methods and properties for drawing on the canvas." from w3schools.com
+			canvasBGColor = 'black';
+
+			// console.log('initializeCanvas() complete');  // DEBUG
+		}
+		function initializeFPS()
+		{
+			// console.log('Called initializeFPS()');  // DEBUG
+			
+			framesPerSecond = 30;
+
+			// console.log('initializeFPS() complete');  // DEBUG
+		}
+		function initializeCardImages() {
+			cards.src = "./cards/cardsheet.png";
+			cardBack.src = "./cards/back.png";
+			cardWidth = canvas.width * 0.15;
+			cardHeight = canvas.height * 0.28;
+			cardFromSheetWidth = 561;
+			cardFromSheetHeight = 781;
+		}
+
+
+		
+		function drawCanvas()
+		{
+			// console.log('Called drawCanvas()');  // DEBUG
+
+			canvasContext.fillStyle = canvasBGColor; // "fillStyle Sets or returns the color, gradient, or pattern used to fill the drawing." from w3schools.com
+			canvasContext.fillRect(0, 0, canvas.width, canvas.height); // Doesn't fill an existing rectangle, but instead creates a filled rectangle.
+
+			// console.log('drawCanvas() complete');  // DEBUG
+		}
+		function drawRect(color, x, y, width, height)
+		{
+			// console.log('Called drawRect()');  // DEBUG
+
+			canvasContext.fillStyle = color;
+			canvasContext.fillRect(x, y, width, height);
+
+			// console.log('drawRect() complete');  // DEBUG
+		}
+		
+		function debugLogic() {
+			if (holdUp && unHold == false) {
+				debugCard++;
+				unHold = true;
+				if (debugCard > 51) {
+					debugCard = 51;
+				}
+			}
+			if (holdDown & unHold == false) {
+				debugCard--;
+				unHold = true;
+				if (debugCard < 0) {
+					debugCard = 0;
+				}
+			}
+			if (holdUp == false && holdDown == false) {
+				unHold = false;
+			}
+			
+		}
+
+		function moveEverything()
+		{
+			return true;			
+		}
+		
+		function drawEverything()
+		{
+			// console.log('Called drawEverything()');  // DEBUG
+
+			drawCanvas();
+			setFont(20,'Papyrus');
+			//drawText('white', dealerDeck[debugCard], 100,100);
+			drawText('white', dealerDeck[debugCard], 100,100);
+			if (cardsSheetLoaded) {
+				if (debugCard < 13) {
+					drawCard(300, 300, debugCard, 2);
+				}
+				else if (debugCard > 12 && debugCard < 26) {
+					drawCard(300, 300, debugCard - 13, 1);
+				}
+				else if (debugCard > 25 && debugCard < 39) {
+					drawCard(300, 300, debugCard - 26, 0);
+				}
+				else if (debugCard > 38 && debugCard < 52) {
+					drawCard(300, 300, debugCard - 39, 3);
+				}
+			}
+			console.log(debugCard);
+
+			// console.log('drawEverything() complete');  // DEBUG
+		}
+		function initializeEverything()
+		{
+			// console.log('Called initializeEverything()');  // DEBUG
+
+			debugCard = 0;
+
+			initializeCanvas();
+			
+			initializeFPS();
+
+			initInput();
+
+			initializeCardImages();
+
+			// console.log('initializeEverything() completed');  // DEBUG
+
+		}
+		function drawCircle(color, x, y, radius)
+		{
+			// console.log('Called drawCircle()');  // DEBUG
+
+			canvasContext.fillStyle = color;
+			canvasContext.beginPath();  // Starts the fill path.
+			canvasContext.arc(x, y, radius, 0, Math.PI * 2, true);
+			canvasContext.fill();
+
+			// console.log('drawCircle() complete');  // DEBUG
+		}
+		
+		function drawText(color, text, x, y) {
+			canvasContext.fillStyle = color;
+			canvasContext.fillText(text, x, y);
+		}
+		
+		function updateAll() {
+			debugLogic();
+			moveEverything();
+			drawEverything();
+		}
+		
+		function setFont(size, font) {
+			canvasContext.font = size + "px " + font;
+		}
+			
+	</script>
+
+</html>
