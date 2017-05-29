@@ -109,7 +109,10 @@
 
 		function drawDealerDeck() {
 			if (showDealer) {
-				drawCard(DEALER_DECK_X, DEALER_DECK_Y, determineCardRowToShow(dealerDeck, debugCard), determineCardColumnToShow());
+				drawCard(DEALER_DECK_X, DEALER_DECK_Y, determineCardRowToShow(dealerDeck, debugCard), determineCardColumnToShow(dealerDeck, debugCard));
+				//drawCard(0,0, 0,0);
+				//console.log(DEALER_DECK_Y);
+				//console.log("dealerDeck should be drawn");
 			}
 			else {
 				drawCardBack(DEALER_DECK_X, DEALER_DECK_Y);
@@ -147,9 +150,9 @@
 			}
   		}
 		function determineCardRowToShow(deck, cardIndex) {
-			
+			value = deck[cardIndex];
 			if (cardsSheetLoaded) {
-				switch (deck[cardIndex].subString(0,1)) { // Checks the first two letters of the string to determine what the value is.
+				switch (value.substring(0,2)) { // Checks the first two letters of the string to determine what the value is.
 					case "Ac":
 						return ACE_ROW;
 						break;
@@ -184,24 +187,37 @@
 						return JACK_ROW;
 						break;
 					case "Qu":
+						console.log("Queen row.")
 						return QUEEN_ROW;
 						break;
-					default: return KING_ROW;
+					default:
+						console.log("King row.")
+						return KING_ROW;
 				}
 			}
 		}
-		function determineCardColumnToShow() {
-				switch (deck[cardIndex].subString(deck[CardIndex].length - 2,deck[CardIndex].length - 2 )) { // Checks the last two letters of the string to determine what the suit is.
+		function determineCardColumnToShow(deck, cardIndex) {
+				var value = deck[cardIndex];
+				switch (value.substring(value.length - 2, value.length)) { // Checks the last two letters of the string to determine what the suit is.
 					case "ts":
+						console.log("Hearts column");
 						return HEARTS_COLUMN;
+						
 						break;
 					case "ds":
+						console.log("Diamonds column");
 						return DIAMONDS_COLUMN;
+						
 						break;
 					case "bs":
+						console.log("Clubs column");
 						return CLUBS_COLUMN;
+						
 						break;
-					default: return SPADES_COLUMN;
+					default:
+						console.log("Spades column");
+						console.log(value.substring(value.length - 2, value.length));
+						return SPADES_COLUMN;
 				}
 		}
   
@@ -357,19 +373,16 @@
 			// console.log('Called initializeEverything()');  // DEBUG
 
 			debugCard = 0;
-			showDealer = true;
-
 			
-
 			initializeCanvas();
-			DEALER_DECK_X = canvas.width / 2 - cardWidth / 2;
-			DEALER_DECK_Y = canvas.height / 20;
-			
+						
 			initializeFPS();
 
 			initInput();
 
 			initializeCardImages();
+			DEALER_DECK_X = canvas.width / 2 - cardWidth / 2;
+			DEALER_DECK_Y = canvas.height / 20;
 
 			// console.log('initializeEverything() completed');  // DEBUG
 
