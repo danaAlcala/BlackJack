@@ -68,8 +68,8 @@
   		const KEY_RIGHT_ARROW = 39;
   		const KEY_DOWN_ARROW = 40;
   		const KEY_SPACE = 32;
-		var DEALER_DECK_X;
-		var DEALER_DECK_Y;
+		var DEALER_DECK_X; // These would have been constants if they didn't rely on the canvas being initialized first.
+		var DEALER_DECK_Y; // They are still basically used as constants.
 
 		// Sprite Sheet Locations
 		const ACE_ROW = 0;
@@ -109,7 +109,7 @@
 
 		function drawDealerDeck() {
 			if (showDealer) {
-				drawCard(DEALER_DECK_X, DEALER_DECK_Y, determineCardRowToShow(), determineCardColumnToShow());
+				drawCard(DEALER_DECK_X, DEALER_DECK_Y, determineCardRowToShow(dealerDeck, debugCard), determineCardColumnToShow());
 			}
 			else {
 				drawCardBack(DEALER_DECK_X, DEALER_DECK_Y);
@@ -147,6 +147,7 @@
 			}
   		}
 		function determineCardRowToShow(deck, cardIndex) {
+			
 			if (cardsSheetLoaded) {
 				switch (deck[cardIndex].subString(0,1)) { // Checks the first two letters of the string to determine what the value is.
 					case "Ac":
@@ -187,6 +188,7 @@
 						break;
 					default: return KING_ROW;
 				}
+			}
 		}
 		function determineCardColumnToShow() {
 				switch (deck[cardIndex].subString(deck[CardIndex].length - 2,deck[CardIndex].length - 2 )) { // Checks the last two letters of the string to determine what the suit is.
@@ -346,7 +348,7 @@
 			setFont(20,'Papyrus');
 			//drawText('white', dealerDeck[debugCard], 100,100);
 			drawText('white', dealerDeck[debugCard], 100,100);
-			
+			drawDealerDeck();
 		}
 			
 		
@@ -355,6 +357,7 @@
 			// console.log('Called initializeEverything()');  // DEBUG
 
 			debugCard = 0;
+			showDealer = true;
 
 			
 
