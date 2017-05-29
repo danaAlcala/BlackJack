@@ -15,7 +15,7 @@
 		// FPS
 		var framesPerSecond;
 		
-		// Deck/Card arrays
+		// Value/Suit arrays
 		var deckValues = [
 			"Ace", // 0
 			"Two", // 1
@@ -39,29 +39,38 @@
 		];
 
 		
-
+		// Images
 		var cards = document.createElement("img");
 		var cardBack = document.createElement("img");
-
-		var shuffleQuantity;
 		
+		// Shuffler
+		var shuffleQuantity;
+
+		// Decks/Hands
 		var dealerDeck = [];
 		var dealerHand = [];
 		var playerHand = [];
-
+		var dealerDeckCount;
+		var dealerHandCount;
+		var playerHandCount;
 		var initialDealerHandX;
 		
+		// Card variables
 		var cardValue;
 		var cardSuit;
 		var cardWidth;
 		var cardHeight;
 		var cardScaleModifier;
 
+		// Debug
 		var debugCard;
+		var showDeck = false;
 
+		// Score
 		var dealerScore;
 		var playerScore;
 
+		// Value-specific variables
 		var aceValue;
 		var twoValue;
 		var threeValue;
@@ -76,19 +85,26 @@
 		var queenValue;
 		var kingValue;
 
+		// Keyboard Handling
 		var holdLeft = false;
 		var holdRight = false;
 		var holdUp = false;
 		var holdDown = false;
 		var unHold = false;
 
+		// After player chooses to STAND
 		var showDealer = false;
 		
+		// Constants, and variables used in a similar fashion to constants.
+
+		// Keyboard constants
 		const KEY_LEFT_ARROW = 37;
  		const KEY_UP_ARROW = 38;
   		const KEY_RIGHT_ARROW = 39;
   		const KEY_DOWN_ARROW = 40;
   		const KEY_SPACE = 32;
+
+		// Deck and Hand placement
 		var DEALER_DECK_X; // These would have been constants if they didn't rely on the canvas being initialized first.
 		var DEALER_DECK_Y; // They are still basically used as constants.
 		var DEALER_HAND_Y; // ''
@@ -133,8 +149,15 @@
 					
 		}
 
+		function dealToDealer() {
+			dealerHand.unshift(dealerDeck.shift());
+		}
+		function dealToPlayer() {
+			playerHand.unshift(dealerDeck.shift());
+		}
+
 		function drawDealerDeck() {
-			if (showDealer) {
+			if (showDeck) {
 				drawCard(DEALER_DECK_X, DEALER_DECK_Y, determineCardRowToShow(dealerDeck, 0), determineCardColumnToShow(dealerDeck, 0));
 				//drawCard(0,0, 0,0);
 				//console.log(DEALER_DECK_Y);
@@ -310,6 +333,9 @@
 			initialDealerHandX = DEALER_DECK_X;
 			DEALER_HAND_Y = DEALER_DECK_Y + cardHeight + DEALER_DECK_Y;
 		}
+		function initializeLabels() {
+
+		}
 		
 		function randomNumber(start, end) {
 			return Math.floor((Math.random() * end) + start);
@@ -388,6 +414,13 @@
 			return true;			
 		}
 		
+		function updateLogic() {
+			dealerDeckCount = dealerDeck.length;
+			dealerHandCount = dealerHand.length;
+			playerHandCount = playerHand.length;
+			console.log(dealerDeckCount, dealerHandCount, playerHandCount)
+		}
+
 		function drawEverything()
 		{
 			// console.log('Called drawEverything()');  // DEBUG
@@ -441,6 +474,7 @@
 		function updateAll() {
 			debugLogic();
 			moveEverything();
+			updateLogic();
 			drawEverything();
 		}
 		
