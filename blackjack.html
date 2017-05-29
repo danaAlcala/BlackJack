@@ -42,18 +42,39 @@
 
 		var cards = document.createElement("img");
 		var cardBack = document.createElement("img");
+
+		var shuffleQuantity;
 		
 		var dealerDeck = [];
 		var dealerHand = [];
 		var playerHand = [];
+
+		var initialDealerHandX;
 		
 		var cardValue;
 		var cardSuit;
 		var cardWidth;
 		var cardHeight;
-		var cardFromSheetWidth;
-		var cardFromSheetHeight;
+		var cardScaleModifier;
+
 		var debugCard;
+
+		var dealerScore;
+		var playerScore;
+
+		var aceValue;
+		var twoValue;
+		var threeValue;
+		var fourValue;
+		var fiveValue;
+		var sixValue;
+		var sevenValue
+		var eightValue;
+		var nineValue;
+		var tenValue;
+		var jackValue;
+		var queenValue;
+		var kingValue;
 
 		var holdLeft = false;
 		var holdRight = false;
@@ -70,6 +91,11 @@
   		const KEY_SPACE = 32;
 		var DEALER_DECK_X; // These would have been constants if they didn't rely on the canvas being initialized first.
 		var DEALER_DECK_Y; // They are still basically used as constants.
+		var DEALER_HAND_Y; // ''
+
+		// Size of actual card in original png
+		const CARD_FROM_SHEET_WIDTH = 560;
+		const CARD_FROM_SHEET_HEIGHT = 781;
 
 		// Sprite Sheet Locations
 		const ACE_ROW = 0;
@@ -94,7 +120,7 @@
 		{
 			initializeEverything();
 			freshDeck();
-			shuffleDeck(dealerDeck);
+			shuffleDeck(dealerDeck, shuffleQuantity);
 			cards.onload = function () {
         		cardsSheetLoaded = true;
 				console.log("Card sheet loaded successfully");
@@ -109,7 +135,7 @@
 
 		function drawDealerDeck() {
 			if (showDealer) {
-				drawCard(DEALER_DECK_X, DEALER_DECK_Y, determineCardRowToShow(dealerDeck, debugCard), determineCardColumnToShow(dealerDeck, debugCard));
+				drawCard(DEALER_DECK_X, DEALER_DECK_Y, determineCardRowToShow(dealerDeck, 0), determineCardColumnToShow(dealerDeck, 0));
 				//drawCard(0,0, 0,0);
 				//console.log(DEALER_DECK_Y);
 				//console.log("dealerDeck should be drawn");
@@ -118,21 +144,24 @@
 				drawCardBack(DEALER_DECK_X, DEALER_DECK_Y);
 			}
 		}
-		function shuffleDeck(deck) {
-			var pull1 = 0, pull2 = 0, sideBar = null;
-			for (pull1 = deck.length - 1; pull1 > 0; pull1 -= 1) {
+		function shuffleDeck(deck, thisManyTimes) {
+			for(i = 0; i <= thisManyTimes; i++) {
+				var pull1 = 0, pull2 = 0, sideBar = null;
+				for (pull1 = deck.length - 1; pull1 > 0; pull1 -= 1) {
     			pull2 = Math.floor(Math.random() * (pull1 + 1));
     			sideBar = deck[pull1];
     			deck[pull1] = deck[pull2];
     			deck[pull2] = sideBar;
+				console.log("shuffled");
+				}
   			}
 		}
 
 		function drawCard(x, y, sheetX, sheetY) {
-			canvasContext.drawImage(cards, sheetX * cardFromSheetWidth, sheetY * cardFromSheetHeight, cardFromSheetWidth, cardFromSheetHeight, x, y, cardWidth, cardHeight);
+			canvasContext.drawImage(cards, sheetX * CARD_FROM_SHEET_WIDTH, sheetY * CARD_FROM_SHEET_HEIGHT, CARD_FROM_SHEET_WIDTH, CARD_FROM_SHEET_WIDTH, x, y, cardWidth * cardScaleModifier, cardHeight * cardScaleModifier);
 		}
 		function drawCardBack(x, y) {
-			canvasContext.drawImage(cardBack, 0, 0, cardFromSheetWidth, cardFromSheetHeight, x, y, cardWidth, cardHeight);
+			canvasContext.drawImage(cardBack, 0, 0, CARD_FROM_SHEET_WIDTH, CARD_FROM_SHEET_HEIGHT, x, y, cardWidth * cardScaleModifier, cardHeight * cardScaleModifier);
 		}
 		
 		function setKeyHoldState(thisKey, setTo) {
@@ -277,10 +306,16 @@
 			console.log('Spades complete');
 		}
 		
-		
+		function initializeDealerHand() {
+			initialDealerHandX = DEALER_DECK_X;
+			DEALER_HAND_Y = DEALER_DECK_Y + cardHeight + DEALER_DECK_Y;
+		}
 		
 		function randomNumber(start, end) {
 			return Math.floor((Math.random() * end) + start);
+		}
+		function initializeShuffler() {
+			shuffleQuantity = 10;
 		}
 		function initializeCanvas()
 		{
@@ -303,13 +338,10 @@
 		function initializeCardImages() {
 			cards.src = "./cards/cardsheet.png";
 			cardBack.src = "./cards/back.png";
-			cardWidth = canvas.width * 0.15;
-			cardHeight = canvas.height * 0.28;
-			cardFromSheetWidth = 560;
-			cardFromSheetHeight = 781;
+			cardWidth = canvas.width * 0.10;
+			cardHeight = canvas.height * 0.186666666666;
+			cardScaleModifier = 1;
 		}
-
-
 		
 		function drawCanvas()
 		{
@@ -363,26 +395,28 @@
 			drawCanvas();
 			setFont(20,'Papyrus');
 			//drawText('white', dealerDeck[debugCard], 100,100);
-			drawText('white', dealerDeck[debugCard], 100,100);
+			drawText('white', dealerDeck[0], 100,100);
 			drawDealerDeck();
 		}
 			
-		
+		function initializeDealerDeck() {
+			DEALER_DECK_X = canvas.width / 2 - cardWidth / 2;
+			DEALER_DECK_Y = canvas.height / 20;
+		}
 		function initializeEverything()
 		{
 			// console.log('Called initializeEverything()');  // DEBUG
 
-			debugCard = 0;
+			//debugCard = 0;
 			
-			initializeCanvas();
-						
+			initializeCanvas();		
 			initializeFPS();
-
+			initializeShuffler();
 			initInput();
-
 			initializeCardImages();
-			DEALER_DECK_X = canvas.width / 2 - cardWidth / 2;
-			DEALER_DECK_Y = canvas.height / 20;
+			initializeDealerDeck();
+			initializeDealerHand();
+			
 
 			// console.log('initializeEverything() completed');  // DEBUG
 
