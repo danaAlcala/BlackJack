@@ -54,6 +54,7 @@
 		var dealerHandCount;
 		var playerHandCount;
 		var initialDealerHandX;
+		var initialPlayerHandX;
 		
 		// Card variables
 		var cardValue;
@@ -108,6 +109,7 @@
 		var DEALER_DECK_X; // These would have been constants if they didn't rely on the canvas being initialized first.
 		var DEALER_DECK_Y; // They are still basically used as constants.
 		var DEALER_HAND_Y; // ''
+		var PLAYER_HAND_Y; // ''
 
 		// Size of actual card in original png
 		const CARD_FROM_SHEET_WIDTH = 560;
@@ -150,10 +152,17 @@
 		}
 
 		function dealToDealer() {
-			dealerHand.unshift(dealerDeck.shift());
+			if (dealerDeck.length > 0) {
+				dealerHand.unshift(dealerDeck.shift());
+				for (i = dealerDeck.length; i > 0; i--) {
+					drawCard(500, 500, determineCardRowToShow(dealerDeck, 0), determineCardColumnToShow(dealerDeck, 0)); // DRAW NOT WORKING YET
+				}
+			}
 		}
 		function dealToPlayer() {
-			playerHand.unshift(dealerDeck.shift());
+			if (dealerDeck.length > 0) {
+				playerHand.unshift(dealerDeck.shift());
+			}
 		}
 
 		function drawDealerDeck() {
@@ -333,6 +342,10 @@
 			initialDealerHandX = DEALER_DECK_X;
 			DEALER_HAND_Y = DEALER_DECK_Y + cardHeight + DEALER_DECK_Y;
 		}
+		function initializePlayerHand() {
+			
+		}
+
 		function initializeLabels() {
 
 		}
@@ -390,18 +403,14 @@
 		
 		function debugLogic() {
 			if (holdUp && unHold == false) {
-				debugCard++;
+				dealToDealer();
 				unHold = true;
-				if (debugCard > 51) {
-					debugCard = 51;
-				}
+				
 			}
 			if (holdDown & unHold == false) {
-				debugCard--;
+				dealToPlayer();
 				unHold = true;
-				if (debugCard < 0) {
-					debugCard = 0;
-				}
+				
 			}
 			if (holdUp == false && holdDown == false) {
 				unHold = false;
@@ -426,9 +435,10 @@
 			// console.log('Called drawEverything()');  // DEBUG
 
 			drawCanvas();
-			setFont(20,'Papyrus');
-			//drawText('white', dealerDeck[debugCard], 100,100);
-			drawText('white', dealerDeck[0], 100,100);
+			setFont(25, 'Arial');
+			drawText('white', "Single-Deck Blackjack", canvas.width / 20, DEALER_DECK_Y + cardHeight / 2);
+			setFont(20, 'Arial');
+			drawText('white', "Dealer Hand:", canvas.width / 20, DEALER_HAND_Y + cardHeight / 2);
 			drawDealerDeck();
 		}
 			
