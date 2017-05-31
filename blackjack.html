@@ -65,7 +65,7 @@
 
 		// Debug
 		var debugCard;
-		var showDeck = false;
+		var showDeck = true;
 
 		// Score
 		var dealerScore;
@@ -113,7 +113,7 @@
 
 		// Size of actual card in original png
 		const CARD_FROM_SHEET_WIDTH = 560;
-		const CARD_FROM_SHEET_HEIGHT = 781;
+		const CARD_FROM_SHEET_HEIGHT = 780;
 
 		// Sprite Sheet Locations
 		const ACE_ROW = 0;
@@ -154,8 +154,14 @@
 		function dealToDealer() {
 			if (dealerDeck.length > 0) {
 				dealerHand.unshift(dealerDeck.shift());
-				for (i = dealerDeck.length; i > 0; i--) {
-					drawCard(500, 500, determineCardRowToShow(dealerDeck, 0), determineCardColumnToShow(dealerDeck, 0)); // DRAW NOT WORKING YET
+				
+			}
+		}
+		function drawDealerHand() {
+			var cardShift = 4;
+			if (dealerHand.length > 0) {
+				for (i = dealerHand.length; i > 0; i--) {
+					drawCard((initialDealerHandX - (i * cardWidth/cardShift)), DEALER_HAND_Y, determineCardRowToShow(dealerHand, i - 1), determineCardColumnToShow(dealerHand, i - 1)); // DRAW NOT WORKING YET
 				}
 			}
 		}
@@ -168,9 +174,6 @@
 		function drawDealerDeck() {
 			if (showDeck) {
 				drawCard(DEALER_DECK_X, DEALER_DECK_Y, determineCardRowToShow(dealerDeck, 0), determineCardColumnToShow(dealerDeck, 0));
-				//drawCard(0,0, 0,0);
-				//console.log(DEALER_DECK_Y);
-				//console.log("dealerDeck should be drawn");
 			}
 			else {
 				drawCardBack(DEALER_DECK_X, DEALER_DECK_Y);
@@ -190,7 +193,7 @@
 		}
 
 		function drawCard(x, y, sheetX, sheetY) {
-			canvasContext.drawImage(cards, sheetX * CARD_FROM_SHEET_WIDTH, sheetY * CARD_FROM_SHEET_HEIGHT, CARD_FROM_SHEET_WIDTH, CARD_FROM_SHEET_WIDTH, x, y, cardWidth * cardScaleModifier, cardHeight * cardScaleModifier);
+			canvasContext.drawImage(cards, sheetX * CARD_FROM_SHEET_WIDTH, sheetY * CARD_FROM_SHEET_HEIGHT, CARD_FROM_SHEET_WIDTH, CARD_FROM_SHEET_HEIGHT, x, y, cardWidth * cardScaleModifier, cardHeight * cardScaleModifier);
 		}
 		function drawCardBack(x, y) {
 			canvasContext.drawImage(cardBack, 0, 0, CARD_FROM_SHEET_WIDTH, CARD_FROM_SHEET_HEIGHT, x, y, cardWidth * cardScaleModifier, cardHeight * cardScaleModifier);
@@ -440,6 +443,7 @@
 			setFont(20, 'Arial');
 			drawText('white', "Dealer Hand:", canvas.width / 20, DEALER_HAND_Y + cardHeight / 2);
 			drawDealerDeck();
+			drawDealerHand();
 		}
 			
 		function initializeDealerDeck() {
