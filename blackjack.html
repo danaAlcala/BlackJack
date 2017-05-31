@@ -53,8 +53,9 @@
 		var dealerDeckCount;
 		var dealerHandCount;
 		var playerHandCount;
-		var initialDealerHandX;
+		var dealerHandX;
 		var initialPlayerHandX;
+		
 		
 		// Card variables
 		var cardValue;
@@ -154,17 +155,22 @@
 		function dealToDealer() {
 			if (dealerDeck.length > 0) {
 				dealerHand.unshift(dealerDeck.shift());
-				
+				dealerHandX += cardWidth/4;
 			}
 		}
 		function drawDealerHand() {
 			var cardShift = 4;
-			if (dealerHand.length > 0) {
-				for (i = dealerHand.length; i > 0; i--) {
-					drawCard((initialDealerHandX - (i * cardWidth/cardShift)), DEALER_HAND_Y, determineCardRowToShow(dealerHand, i - 1), determineCardColumnToShow(dealerHand, i - 1)); // DRAW NOT WORKING YET
+			var handSize = dealerHand.length;
+			if (handSize > 0) {
+				for (i = handSize; i > 0; i--) {
+					
+					drawCard((dealerHandX - (i * cardWidth/cardShift)), DEALER_HAND_Y, determineCardRowToShow(dealerHand, i - 1), determineCardColumnToShow(dealerHand, i - 1));
 				}
+				
 			}
 		}
+		
+
 		function dealToPlayer() {
 			if (dealerDeck.length > 0) {
 				playerHand.unshift(dealerDeck.shift());
@@ -342,8 +348,15 @@
 		}
 		
 		function initializeDealerHand() {
-			initialDealerHandX = DEALER_DECK_X;
+			dealerHandX = DEALER_DECK_X;
 			DEALER_HAND_Y = DEALER_DECK_Y + cardHeight + DEALER_DECK_Y;
+			dealerHandCount = 0;
+		}
+		function updateDealerHandPosition() {
+			if (dealerHand.length > dealerHandCount) {
+				dealerHandX -= cardWidth/4/2;
+				dealerHandCount = dealerHand.length;
+			}
 		}
 		function initializePlayerHand() {
 			
@@ -428,7 +441,7 @@
 		
 		function updateLogic() {
 			dealerDeckCount = dealerDeck.length;
-			dealerHandCount = dealerHand.length;
+			updateDealerHandPosition();
 			playerHandCount = playerHand.length;
 			console.log(dealerDeckCount, dealerHandCount, playerHandCount)
 		}
