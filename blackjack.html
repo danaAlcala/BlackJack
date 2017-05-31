@@ -142,11 +142,11 @@
 			shuffleDeck(dealerDeck, shuffleQuantity);
 			cards.onload = function () {
         		cardsSheetLoaded = true;
-				console.log("Card sheet loaded successfully");
+				//console.log("Card sheet loaded successfully");
     		}
 			cardBack.onload = function () {
         		cardsBackLoaded = true;
-				console.log("Card back loaded successfully");
+				//console.log("Card back loaded successfully");
     		}
 			setInterval(updateAll, 1000 / framesPerSecond);
 					
@@ -163,17 +163,25 @@
 			var handSize = dealerHand.length;
 			if (handSize > 0) {
 				for (i = handSize; i > 0; i--) {
-					
 					drawCard((dealerHandX - (i * cardWidth/cardShift)), DEALER_HAND_Y, determineCardRowToShow(dealerHand, i - 1), determineCardColumnToShow(dealerHand, i - 1));
 				}
-				
 			}
 		}
-		
+		function drawPlayerHand() {
+			var cardShift = 4;
+			var handSize = playerHand.length;
+			console.log(cardShift);
+			if (handSize > 0) {
+				for (i = handSize; i > 0; i--) {
+					drawCard((playerHandX - (i * cardWidth/cardShift)), PLAYER_HAND_Y, determineCardRowToShow(playerHand, i - 1), determineCardColumnToShow(playerHand, i - 1));
+				}
+			}
+		}
 
 		function dealToPlayer() {
 			if (dealerDeck.length > 0) {
 				playerHand.unshift(dealerDeck.shift());
+				playerHandX += cardWidth / 4;
 			}
 		}
 
@@ -193,12 +201,13 @@
     			sideBar = deck[pull1];
     			deck[pull1] = deck[pull2];
     			deck[pull2] = sideBar;
-				console.log("shuffled");
+				//console.log("shuffled");
 				}
   			}
 		}
 
 		function drawCard(x, y, sheetX, sheetY) {
+			
 			canvasContext.drawImage(cards, sheetX * CARD_FROM_SHEET_WIDTH, sheetY * CARD_FROM_SHEET_HEIGHT, CARD_FROM_SHEET_WIDTH, CARD_FROM_SHEET_HEIGHT, x, y, cardWidth * cardScaleModifier, cardHeight * cardScaleModifier);
 		}
 		function drawCardBack(x, y) {
@@ -257,11 +266,11 @@
 						return JACK_ROW;
 						break;
 					case "Qu":
-						console.log("Queen row.")
+						//console.log("Queen row.")
 						return QUEEN_ROW;
 						break;
 					default:
-						console.log("King row.")
+						//console.log("King row.")
 						return KING_ROW;
 				}
 			}
@@ -270,23 +279,23 @@
 				var value = deck[cardIndex];
 				switch (value.substring(value.length - 2, value.length)) { // Checks the last two letters of the string to determine what the suit is.
 					case "ts":
-						console.log("Hearts column");
+						//console.log("Hearts column");
 						return HEARTS_COLUMN;
 						
 						break;
 					case "ds":
-						console.log("Diamonds column");
+						//console.log("Diamonds column");
 						return DIAMONDS_COLUMN;
 						
 						break;
 					case "bs":
-						console.log("Clubs column");
+						//console.log("Clubs column");
 						return CLUBS_COLUMN;
 						
 						break;
 					default:
-						console.log("Spades column");
-						console.log(value.substring(value.length - 2, value.length));
+						//console.log("Spades column");
+						//console.log(value.substring(value.length - 2, value.length));
 						return SPADES_COLUMN;
 				}
 		}
@@ -318,33 +327,33 @@
 			var i = 0;
 			for (i; i < 13; i++) {
 				dealerDeck[i] = deckValues[i] + " of " + deckSuits[0];
-				console.log('Heart card added');
+				//console.log('Heart card added');
 			}
-			console.log('Hearts complete');
+			//console.log('Hearts complete');
 		}
 		function loadDiamonds() {
 			var i = 13;
 			for (i; i < 26; i++) {
 				dealerDeck[i] = deckValues[i-13] + " of " + deckSuits[1];
-				console.log('Diamond card added');
+				//console.log('Diamond card added');
 			}
-			console.log('Diamonds complete');
+			//console.log('Diamonds complete');
 		}
 		function loadClubs() {
 			var i = 26;
 			for (i; i < 39; i++) {
 				dealerDeck[i] = deckValues[i-26] + " of " + deckSuits[2];
-				console.log('Club card added');
+				//console.log('Club card added');
 			}
-			console.log('Clubs complete');
+			//console.log('Clubs complete');
 		}
 		function loadSpades() {
 			var i = 39;
 			for (i; i < 52; i++) {
 				dealerDeck[i] = deckValues[i-39] + " of " + deckSuits[3];
-				console.log('Spade card added');
+				//console.log('Spade card added');
 			}
-			console.log('Spades complete');
+			//console.log('Spades complete');
 		}
 		
 		function initializeDealerHand() {
@@ -352,15 +361,24 @@
 			DEALER_HAND_Y = DEALER_DECK_Y + cardHeight + DEALER_DECK_Y;
 			dealerHandCount = 0;
 		}
+		function initializePlayerHand() {
+			playerHandX = DEALER_DECK_X;
+			PLAYER_HAND_Y = DEALER_HAND_Y + cardHeight + DEALER_DECK_Y;
+			playerHandCount = 0;
+		}
 		function updateDealerHandPosition() {
 			if (dealerHand.length > dealerHandCount) {
-				dealerHandX -= cardWidth/4/2;
+				dealerHandX -= cardWidth/8;
 				dealerHandCount = dealerHand.length;
 			}
 		}
-		function initializePlayerHand() {
-			
+		function updatePlayerHandPosition() {
+			if (playerHand.length > playerHandCount) {
+				playerHandX -= cardWidth/8;
+				playerHandCount = playerHand.length;
+			}
 		}
+		
 
 		function initializeLabels() {
 
@@ -419,12 +437,18 @@
 		
 		function debugLogic() {
 			if (holdUp && unHold == false) {
-				dealToDealer();
+				if (dealerDeck.length > 0) {
+					dealToDealer();
+				}
+				
 				unHold = true;
 				
 			}
 			if (holdDown & unHold == false) {
-				dealToPlayer();
+				if (dealerDeck.length >0) {
+					dealToPlayer();
+				}
+				
 				unHold = true;
 				
 			}
@@ -442,6 +466,7 @@
 		function updateLogic() {
 			dealerDeckCount = dealerDeck.length;
 			updateDealerHandPosition();
+			updatePlayerHandPosition();
 			playerHandCount = playerHand.length;
 			console.log(dealerDeckCount, dealerHandCount, playerHandCount)
 		}
@@ -457,6 +482,7 @@
 			drawText('white', "Dealer Hand:", canvas.width / 20, DEALER_HAND_Y + cardHeight / 2);
 			drawDealerDeck();
 			drawDealerHand();
+			drawPlayerHand();
 		}
 			
 		function initializeDealerDeck() {
@@ -476,6 +502,7 @@
 			initializeCardImages();
 			initializeDealerDeck();
 			initializeDealerHand();
+			initializePlayerHand();
 			
 
 			// console.log('initializeEverything() completed');  // DEBUG
