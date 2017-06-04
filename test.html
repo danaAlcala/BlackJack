@@ -1,0 +1,32 @@
+<html>
+<canvas id = "gameCanvas" width = "800" height = "600"> // Notice that this is in the HTML itself, and not the Javascript.  gameCanvas is a label that will be used in the actual script.
+</canvas>
+
+<script src = "./scripts/init.js"></script>
+<script src = "./scripts/events.js"></script>
+<script src = "./scripts/cards.js"></script>
+<script src = "./scripts/update.js"></script>
+<script src = "./scripts/draw.js"></script>
+<script src = "./scripts/debug.js"></script>
+<script src = "./scripts/input.js"></script>
+<script src = "./scripts/score.js"></script>
+
+<script>
+    window.onload = function() // Everything that runs in this function runs after the window has finished loading.
+		{
+			initializeEverything();
+			freshDeck();
+			shuffleDeck(dealerDeck, shuffleQuantity);
+			cards.onload = function () {
+        		cardsSheetLoaded = true;
+				//console.log("Card sheet loaded successfully");
+    		}
+			cardBack.onload = function () {
+        		cardsBackLoaded = true;
+				//console.log("Card back loaded successfully");
+    		}
+			setInterval(updateAll, 1000 / framesPerSecond);
+					
+		}
+</script>
+</html>
